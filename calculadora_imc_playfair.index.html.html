@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de IMC y Objetivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #ffe6f2;
+        }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            background: #fff0f6;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #ff66b2;
+        }
+        input, select {
+            padding: 10px;
+            margin: 10px;
+            width: calc(100% - 22px);
+            font-size: 16px;
+            border: 1px solid #ff66b2;
+            border-radius: 5px;
+            font-family: 'Playfair Display', serif;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ff66b2;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Playfair Display', serif;
+        }
+        button:hover {
+            background-color: #ff3399;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        h1, h2, p {
+            color: #ff3399;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de IMC y Objetivo</h1>
+        <form id="bmiForm">
+            <label for="age">Edad:</label>
+            <input type="number" id="age" name="age" required>
+            <label for="height">Altura (cm):</label>
+            <input type="number" id="height" name="height" required>
+            <label for="weight">Peso (kg):</label>
+            <input type="number" id="weight" name="weight" required>
+            <label for="activity">Nivel de actividad:</label>
+            <select id="activity" name="activity" required>
+                <option value="sedentary">Sedentario</option>
+                <option value="light">Ligero</option>
+                <option value="moderate">Moderado</option>
+                <option value="active">Activo</option>
+                <option value="very_active">Muy activo</option>
+            </select>
+            <label for="goal">Objetivo:</label>
+            <select id="goal" name="goal" required>
+                <option value="maintain">Mantenimiento</option>
+                <option value="bulk">Bulk</option>
+                <option value="cut">Definición</option>
+                <option value="lose_weight">Pérdida de peso</option>
+            </select>
+            <button type="button" onclick="calculateBMI()">Calcular</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateBMI() {
+            const age = document.getElementById('age').value;
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
+            const activity = document.getElementById('activity').value;
+            const goal = document.getElementById('goal').value;
+
+            if (age && height && weight && activity && goal) {
+                const heightMeters = height / 100;
+                const bmi = (weight / (heightMeters * heightMeters)).toFixed(2);
+
+                let bmr;
+                if (age <= 30) {
+                    bmr = 15.3 * weight + 679;
+                } else if (age <= 60) {
+                    bmr = 11.6 * weight + 879;
+                } else {
+                    bmr = 13.5 * weight + 487;
+                }
+
+                let activityFactor;
+                switch (activity) {
+                    case 'sedentary':
+                        activityFactor = 1.2;
+                        break;
+                    case 'light':
+                        activityFactor = 1.375;
+                        break;
+                    case 'moderate':
+                        activityFactor = 1.55;
+                        break;
+                    case 'active':
+                        activityFactor = 1.725;
+                        break;
+                    case 'very_active':
+                        activityFactor = 1.9;
+                        break;
+                    default:
+                        activityFactor = 1.2;
+                }
+
+                const maintenanceCalories = bmr * activityFactor;
+                let goalCalories;
+                switch (goal) {
+                    case 'maintain':
+                        goalCalories = maintenanceCalories;
+                        break;
+                    case 'bulk':
+                        goalCalories = maintenanceCalories + 500;
+                        break;
+                    case 'cut':
+                        goalCalories = maintenanceCalories - 500;
+                        break;
+                    case 'lose_weight':
+                        goalCalories = maintenanceCalories - 1000;
+                        break;
+                    default:
+                        goalCalories = maintenanceCalories;
+                }
+
+                document.getElementById('result').innerHTML = `
+                    <h2>Resultados</h2>
+                    <p>IMC: ${bmi}</p>
+                    <p>Calorías diarias recomendadas: ${goalCalories.toFixed(2)} kcal</p>
+                    <p>Objetivo: ${goal}</p>
+                `;
+            } else {
+                alert('Por favor, complete todos los campos.');
+            }
+        }
+    </script>
+</body>
+</html>
